@@ -68,9 +68,48 @@
         .animate-ticker:hover {
             animation-play-state: paused;
         }
+
+        /* ESTILIZAÇÃO DO CONTAINER A4 */
+        .a4-container {
+            aspect-ratio: 1 / 1.4142; /* Proporção exata do papel A4 */
+            max-height: 85vh;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-500 selection:text-white pb-20 sm:pb-0">
+
+    <!-- ========================================== -->
+    <!-- POPUP 1: CARTAZ PROPAGANDA FORMATO A4      -->
+    <!-- ========================================== -->
+    <div id="popupCartazA4" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 max-w-full flex items-center justify-center">
+            <!-- Botão Fechar -->
+            <button onclick="fecharPopupCartaz()" class="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all border border-white/20">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <!-- Imagem A4 -->
+            <div class="a4-container overflow-hidden flex items-center justify-center">
+                <img src="./IMG/cartaz.webp" alt="Cartaz de Propaganda" class="w-full h-full object-contain">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- POPUP 2: SITE EXTERNO (10s ABRE / 3s FECHA)-->
+    <!-- ========================================== -->
+    <div id="popupSiteExterno" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200 relative">
+            <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800">
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold truncate">
+                    <i class="fa-solid fa-globe text-brand-400"></i>
+                    <span class="truncate">https://thammymiranda.com.br/</span>
+                </div>
+                <button onclick="fecharPopupSite()" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+            </div>
+            <iframe id="iframeSiteExterno" src="" class="w-full h-full border-0"></iframe>
+        </div>
+    </div>
 
     <!-- BARRA SUPERIOR DE INFORMAÇÕES DE CONTATO -->
     <div class="bg-slate-900 text-slate-300 text-xs sm:text-sm py-2 px-4 border-b border-slate-800">
@@ -903,6 +942,40 @@
     <script>
         const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyldFr7aPmGjVNo5hhQTfSHKRw6hTZmzY0bmrMEr8Nt_XPQ0JhzphCgxzWSFdwJAQobaw/exec"; 
 
+        // LÓGICA DOS POPUPS DE PROPAGANDA SOLICITADOS
+        function fecharPopupCartaz() {
+            document.getElementById('popupCartazA4').classList.add('hidden');
+        }
+
+        function fecharPopupSite() {
+            const popup = document.getElementById('popupSiteExterno');
+            popup.classList.add('hidden');
+            popup.classList.remove('flex');
+            document.getElementById('iframeSiteExterno').src = '';
+        }
+
+        // Execução ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            // Popup A4 abre imediatamente
+            document.getElementById('popupCartazA4').classList.remove('hidden');
+
+            // Timer de 10 segundos para abrir o site externo
+            setTimeout(() => {
+                const popupSite = document.getElementById('popupSiteExterno');
+                const iframe = document.getElementById('iframeSiteExterno');
+                
+                iframe.src = 'https://thammymiranda.com.br/';
+                popupSite.classList.remove('hidden');
+                popupSite.classList.add('flex');
+
+                // Timer de 3 segundos para fechar automaticamente
+                setTimeout(() => {
+                    fecharPopupSite();
+                }, 3000);
+
+            }, 10000);
+        });
+
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -1029,6 +1102,8 @@
                 closeModal('estatutoModal');
                 closeModal('cadastroModal');
                 fecharMembro();
+                fecharPopupCartaz();
+                fecharPopupSite();
             }
         });
     </script>
